@@ -60,12 +60,6 @@ def high_card(cards, but=None):
         but = {but}
     return max(value(card) for card in cards if value(card) not in but)
 
-def is_flush(cards):
-    dist = hand_dist(cards)
-    if(all(suit(card)==suit(cards[0]) for card in cards)==True):
-        return max([k for k, value in dist.items() if value == 1])
-    return False
-
 def is_straight(cards):
     dist = hand_dist(cards)
     for value in range(1,11):
@@ -75,13 +69,15 @@ def is_straight(cards):
 
 def is_flush(cards):
     dist = hand_dist(cards)
-    if(all(suit(card)==suit(cards[0]) for card in cards)==True):
+    if all(suit(card)==suit(cards[0]) for card in cards):
         return max([k for k, value in dist.items() if value == 1])
     return False
 
 def is_straight_flush(cards):
-    if (is_straight(cards) is not False and is_flush(cards) is not False):
-        return True
+    straight = is_straight(cards)
+    flush = is_flush(cards)
+    if straight and flush:
+        return straight
     return False
 
 def is_four(cards):
@@ -121,7 +117,7 @@ def is_two_pair(cards):
 def is_full_house(cards):
     hc = card_count(cards,3)
     k = card_count(cards,2,hc)
-    if (k is not False):
+    if (hc is not False and k is not False):
         return [hc,k]
     return False
 
@@ -133,8 +129,24 @@ def is_high_card(cards):
     k4 = high_card(cards,{hc,k1,k2,k3})
     return [hc,k1,k2,k3,k4]
 
-# def hand_rank(cards):
-#     if
+def hand_rank(cards):
+    if is_straight_flush(cards) is not False:
+        return 8
+    if is_four(cards) is not False:
+        return 7
+    if is_full_house(cards) is not False:
+        return 6
+    if is_flush(cards) is not False:
+        return 5
+    if is_straight(cards) is not False:
+        return 4
+    if is_three(cards) is not False:
+        return 3
+    if is_two_pair(cards) is not False:
+        return 2
+    if is_pair(cards) is not False:
+        return 1
+    return 0
 
 # print('Should be: 13: ', high_card(pair_1))
 # print('Should be: 14: ', high_card(straight_1))
@@ -158,6 +170,8 @@ def is_high_card(cards):
 # print(is_full_house(full_house_1))
 # print(is_full_house(straight_1))
 
+# print(is_full_house(flush_1))
+
 # print(is_four(full_house_1))
 # print(is_four(four_1))
 
@@ -165,10 +179,27 @@ def is_high_card(cards):
 # print(is_three(three_2))
 # print(is_three(straight_1))
 
-print(is_high_card(straight_1))
-print(is_high_card(straight_2))
-print(is_high_card(high_card_1))
+# print(is_high_card(straight_1))
+# print(is_high_card(straight_2))
+# print(is_high_card(high_card_1))
 
 # print(is_straight(straight_3))
+
+print('Should be: 8: ', hand_rank(royal_flush_1))
+print('Should be: 7: ', hand_rank(four_1))
+print('Should be: 6: ', hand_rank(full_house_1))
+print('Should be: 5: ', hand_rank(flush_1))
+print('Should be: 4: ', hand_rank(straight_2))
+print('Should be: 3: ', hand_rank(three_1))
+print('Should be: 2: ', hand_rank(two_pair_1))
+print('Should be: 1: ', hand_rank(pair_1))
+print('Should be: 0: ', hand_rank(high_card_1))
+
+# if is_flush(flush_1) is not False:
+#     print('Nice!')
+
+# print(is_full_house(flush_1))
+
+# print(hand_rank(flush_1))
 
 # print('Your poker hand:', hand)
