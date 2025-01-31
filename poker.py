@@ -1,8 +1,5 @@
 import random
 
-suits = ['H', 'D', 'C', 'S']
-ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
-
 two_pair_1=[('K', 'H'), ('K', 'C'), ('4', 'C'), ('8', 'C'), ('8', 'H')]
 high_card_1=[('4', 'H'), ('7', 'C'), ('2', 'C'), ('K', 'C'), ('8', 'H')]
 three_1=[('3', 'S'), ('3', 'C'), ('K', 'D'), ('Q', 'D'), ('3', 'H')]
@@ -15,13 +12,6 @@ straight_2=[('3', 'H'), ('5', 'C'), ('4', 'D'), ('6', 'D'), ('7', 'H')]
 straight_3=[('A', 'H'), ('2', 'C'), ('4', 'C'), ('3', 'C'), ('5', 'H')]
 royal_flush_1=[('K', 'H'), ('10', 'H'), ('J', 'H'), ('A', 'H'), ('Q', 'H')]
 flush_1=[('Q', 'C'), ('10', 'C'), ('J', 'C'), ('10', 'C'), ('Q', 'C')]
-
-def generate_hand():
-    deck = [(rank, suit) for rank in ranks for suit in suits]
-    random.shuffle(deck)
-    return deck[:5]
-
-hand = generate_hand()
 
 def suit(card):
     return card[-1]
@@ -129,77 +119,69 @@ def is_high_card(cards):
     k4 = high_card(cards,{hc,k1,k2,k3})
     return [hc,k1,k2,k3,k4]
 
-def hand_rank(cards):
+def hand_rank_list(cards):    
+    result = []
     if is_straight_flush(cards) is not False:
-        return 8
+        result.append(8)
+        result.append(is_straight_flush(cards))
+        return result
     if is_four(cards) is not False:
-        return 7
+        result.append(7)
+        result.extend(is_four(cards))
+        return result
     if is_full_house(cards) is not False:
-        return 6
+        result.append(6)
+        result.extend(is_full_house(cards))
+        return result
     if is_flush(cards) is not False:
-        return 5
+        result.append(5)
+        result.append(is_flush(cards))
+        return result
     if is_straight(cards) is not False:
-        return 4
+        result.append(4)
+        result.append(is_straight(cards))
+        return result
     if is_three(cards) is not False:
-        return 3
+        result.append(3)
+        result.extend(is_three(cards))
+        return result
     if is_two_pair(cards) is not False:
-        return 2
+        result.append(2)
+        result.extend(is_two_pair(cards))
+        return result
     if is_pair(cards) is not False:
-        return 1
-    return 0
+        result.append(1)
+        result.extend(is_pair(cards))
+        return result
+    result.append(0)
+    result.extend(is_high_card(cards))
+    return result
 
-# print('Should be: 13: ', high_card(pair_1))
-# print('Should be: 14: ', high_card(straight_1))
-# print('Should be: 13: ', high_card(straight_1,14))
-# print('Should be: 12: ', high_card(straight_1,{14,13}))
+def hand_rank_string(cards):
+    if is_straight_flush(cards) is not False:
+        return "straight flush"
+    if is_four(cards) is not False:
+        return "four of a kind"
+    if is_full_house(cards) is not False:
+        return "full house"
+    if is_flush(cards) is not False:
+        return "flush"
+    if is_straight(cards) is not False:
+        return "straight"
+    if is_three(cards) is not False:
+        return "three of a kind"
+    if is_two_pair(cards) is not False:
+        return "two pair"
+    if is_pair(cards) is not False:
+        return "pair"
+    return "high card" 
 
-# print(is_straight(pair_1))
-# print(is_straight_flush(royal_flush_1))
-# print(is_straight_flush(straight_1))
-# print(is_straight(straight_1))
-# print(is_straight(straight_2))
-
-# print(is_pair(pair_1))
-# print(is_pair(straight_1))
-# print(is_pair(straight_2))
-
-# print(is_two_pair(two_pair_1))
-# print(is_two_pair(pair_1))
-# print(is_two_pair(straight_1))
-
-# print(is_full_house(full_house_1))
-# print(is_full_house(straight_1))
-
-# print(is_full_house(flush_1))
-
-# print(is_four(full_house_1))
-# print(is_four(four_1))
-
-# print(is_three(three_1))
-# print(is_three(three_2))
-# print(is_three(straight_1))
-
-# print(is_high_card(straight_1))
-# print(is_high_card(straight_2))
-# print(is_high_card(high_card_1))
-
-# print(is_straight(straight_3))
-
-print('Should be: 8: ', hand_rank(royal_flush_1))
-print('Should be: 7: ', hand_rank(four_1))
-print('Should be: 6: ', hand_rank(full_house_1))
-print('Should be: 5: ', hand_rank(flush_1))
-print('Should be: 4: ', hand_rank(straight_2))
-print('Should be: 3: ', hand_rank(three_1))
-print('Should be: 2: ', hand_rank(two_pair_1))
-print('Should be: 1: ', hand_rank(pair_1))
-print('Should be: 0: ', hand_rank(high_card_1))
-
-# if is_flush(flush_1) is not False:
-#     print('Nice!')
-
-# print(is_full_house(flush_1))
-
-# print(hand_rank(flush_1))
-
-# print('Your poker hand:', hand)
+# print('Should be: 8: ', hand_rank(royal_flush_1))
+# print('Should be: 7: ', hand_rank(four_1))
+# print('Should be: 6: ', hand_rank(full_house_1))
+# print('Should be: 5: ', hand_rank(flush_1))
+# print('Should be: 4: ', hand_rank(straight_2))
+# print('Should be: 3: ', hand_rank(three_1))
+# print('Should be: 2: ', hand_rank(two_pair_1))
+# print('Should be: 1: ', hand_rank(pair_1))
+# print('Should be: 0: ', hand_rank(high_card_1))
