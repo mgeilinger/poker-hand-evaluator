@@ -28,6 +28,21 @@ def value(card):
     else:
         return int(card[0])
 
+# Define suits and ranks for poker cards
+suits = ['H', 'D', 'C', 'S']
+ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
+
+# Function to generate a random poker hand
+def generate_hand():
+    deck = [(rank, suit) for rank in ranks for suit in suits]
+    random.shuffle(deck)
+    return deck[:5]
+
+# Function to format the poker hand nicely with symbols
+def format_poker_hand(hand):
+    suit_symbols = {'H': '♥', 'S': '♠', 'D': '♦', 'C': '♣'}
+    return ", ".join(f"{rank}{suit_symbols[suit]}" for rank, suit in hand)
+
 def hand_dist(cards):
     dist = {i:0 for i in range(1,15)}
     for card in cards:

@@ -19,6 +19,8 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById("box5").checked
         ];
 
+        console.log("Sending checkbox states:", checkboxStates);
+
         // Send updated data to the Flask backend
         fetch('/submit', {
             method: 'POST',
