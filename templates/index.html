@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poker Draw Calculator</title>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script> <!-- Ensure correct JS file path -->
+</head>
+<body>
+    <h1>Poker Draw Calculator</h1>
+    <h2>Select Your Options</h2>
+    
+    <label><input type="checkbox" id="box1"> Option 1</label><br>
+    <label><input type="checkbox" id="box2"> Option 2</label><br>
+    <label><input type="checkbox" id="box3"> Option 3</label><br>
+    <label><input type="checkbox" id="box4"> Option 4</label><br>
+    <label><input type="checkbox" id="box5"> Option 5</label><br>
+
+    <button>Draw</button> <!-- Calls submitSelection() -->
+    <p id="response"></p> <!-- Display response from the server -->
+</body>
+</html>
