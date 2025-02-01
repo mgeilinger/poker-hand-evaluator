@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Poker Draw Calculator</title>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script> <!-- Ensure correct JS file path -->
+    <title>Poker Draw Calculator</title>
 </head>
 <body>
     <h1>Poker Draw Calculator</h1>
@@ -16,7 +16,10 @@
     <label><input type="checkbox" id="box4"> Option 4</label><br>
     <label><input type="checkbox" id="box5"> Option 5</label><br>
 
-    <button>Draw</button> <!-- Calls submitSelection() -->
-    <p id="response"></p> <!-- Display response from the server -->
+    <p id="checkbox-response"></p> <!-- Section to display checkbox selection message -->
+
+    <button id="drawButton">Draw</button> <!-- Button to generate poker hand -->
+
+    <p id="poker-hand"></p> <!-- Section to display poker hand -->
 </body>
 </html>

@@ -1,7 +1,17 @@
 document.addEventListener('DOMContentLoaded', function () {
-    function submitSelection() {
-        // Store checkbox states in an array
-        let checkboxStates = [
+    // Initialize checkboxStates
+    let checkboxStates = [
+        document.getElementById("box1").checked,
+        document.getElementById("box2").checked,
+        document.getElementById("box3").checked,
+        document.getElementById("box4").checked,
+        document.getElementById("box5").checked
+    ];
+
+    // Function to update checkbox states
+    function updateCheckboxStates() {
+        // Update the checkboxStates array based on the current checkbox status
+        checkboxStates = [
             document.getElementById("box1").checked,
             document.getElementById("box2").checked,
             document.getElementById("box3").checked,
@@ -9,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById("box5").checked
         ];
 
-        // Send data to the Flask backend
+        // Send updated data to the Flask backend
         fetch('/submit', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -17,11 +27,29 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .then(response => response.json())
         .then(data => {
-            document.getElementById("response").innerText = data.message; // Display response
+            // Display the checkbox response in the appropriate section
+            document.getElementById("checkbox-response").innerText = data.checkbox_message;
         })
         .catch(error => console.error('Error:', error));
     }
 
-    // Ensure the button event listener calls the function
-    document.querySelector('button').addEventListener('click', submitSelection);
+    // Attach event listeners to each checkbox to update states when clicked
+    document.getElementById("box1").addEventListener('change', updateCheckboxStates);
+    document.getElementById("box2").addEventListener('change', updateCheckboxStates);
+    document.getElementById("box3").addEventListener('change', updateCheckboxStates);
+    document.getElementById("box4").addEventListener('change', updateCheckboxStates);
+    document.getElementById("box5").addEventListener('change', updateCheckboxStates);
+
+    // Function to draw poker hand when "Draw" button is clicked
+    document.getElementById("drawButton").addEventListener('click', function() {
+        fetch('/draw', {
+            method: 'GET'
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Display the poker hand response in the appropriate section
+            document.getElementById("poker-hand").innerText = data.hand_message;
+        })
+        .catch(error => console.error('Error:', error));
+    });
 });
