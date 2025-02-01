@@ -31,7 +31,7 @@ def submit():
 
     # Process checkbox data
     selected_count = sum(checkbox_states)
-    response_message = f"{selected_count} boxes selected."
+    response_message = f"{selected_count} cards selected"
     
     return jsonify({'checkbox_message': response_message})
 
