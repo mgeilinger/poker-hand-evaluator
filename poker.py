@@ -63,7 +63,10 @@ def high_card(cards, but=None):
     dist = hand_dist(cards)
     if not isinstance(but, set):
         but = {but}
-    return max(value(card) for card in cards if value(card) not in but)
+    valid_cards = [value(card) for card in cards if value(card) not in but]
+    if not valid_cards:  # If the list is empty, return a safe default value
+        return min(dist.keys())  # Or any fallback value
+    return max(valid_cards)
 
 def is_straight(cards):
     dist = hand_dist(cards)
@@ -200,3 +203,6 @@ def hand_rank_string(cards):
 # print('Should be: 2: ', hand_rank(two_pair_1))
 # print('Should be: 1: ', hand_rank(pair_1))
 # print('Should be: 0: ', hand_rank(high_card_1))
+
+# print(is_pair(pair_1))
+# print(is_pair(straight_1))
