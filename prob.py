@@ -2,6 +2,7 @@ from poker import *
 
 import random
 import math
+from collections import Counter
 
 checkboxStates = [False,False,False,True,True] #Will be taken from js later
 
@@ -44,20 +45,42 @@ def flush_probability(cards,states):
     return 0
 
 def pair_probability(cards, states):
+    # If your hand already has a pair or better, you won't care about getting a pair
+    # So I want this to return 0
+    hand_after_discard = create_hand_after_discard(cards, states)
+    if is_four(cards) is not False or is_three(cards) is not False or is_two_pair(cards) is not False or is_pair (cards) is not False:
+        return 0
     deck = 47
     draws = states.count(True)
     kept_ranks = kept_card_ranks(cards, states)
-    success_states = 0
+    old_success_states = 0
     needed = 1 # Only need one success to make a pair
-    hand_after_discard = create_hand_after_discard(cards, states)
     if draws == 0:
         return 0
-    if is_pair(hand_after_discard) is not False:
-        return 0 # Don't show the probability if you already have a pair (after discarding)
+    # Probability of making a pair from the cards you already have:
     for rank in kept_ranks:
-        success_states += 4
-        success_states -= count_rank_occurrences(cards,rank)
-    return round(pmf (deck,success_states,draws,needed),2)
+        old_success_states += 4
+        old_success_states -= count_rank_occurrences(cards,rank)
+    probability_old_pair = pmf (deck,old_success_states,draws,needed)
+    # Probability of drawing a new pair from the deck:
+    if draws<2:
+        return round(probability_old_pair,2)
+    probability_new_pair = 0
+    for rank in ranks:
+        in_deck = 4
+        if rank in kept_ranks:
+            in_deck -= 1
+        N = math.comb(deck,draws)
+        K = math.comb(in_deck,2)*draws*(draws-1)*math.comb(12,draws-2)
+        probability_of_rank = pmf(N,K,1,1)
+        probability_new_pair += probability_of_rank
+        # print('Probability is:',probability_of_rank,'for',rank)
+        # print('N:',N)
+        # print('K:',K)
+    # print('Probability of drawing an old pair:',probability_old_pair)
+    # print('Probability of drawing a new pair:',probability_new_pair)
+    probability = probability_old_pair + probability_new_pair
+    return round(probability,2)
 
 # def three_probability(cards, states):
 #     deck = 47
@@ -84,14 +107,8 @@ def pair_probability(cards, states):
 hand = generate_hand()
 formatted_hand = format_poker_hand(hand)
 
-# print(formatted_hand)
-# print('You have a',hand_rank_string(hand))
+s = [False, False, False, False, True]
+c = [('6', 'H'), ('7', 'H'), ('8', 'H'), ('J', 'H'), ('K', 'C')]
 
-s = [False, True, False, False, False]
-c = [('K', 'H'), ('K', 'H'), ('4', 'H'), ('8', 'H'), ('9', 'H')]
-
-# print('Hand after discard:',create_hand_after_discard(c,s))
-# print(three_probability(c,s))
-
-print('Hand after discard:',create_hand_after_discard(c,s))
-print(pair_probability(c,s))
+print('The probability of drawing a pair is:',pair_probability(c,s))
+print('The probability of drawing a flush is:',flush_probability(c,s))
