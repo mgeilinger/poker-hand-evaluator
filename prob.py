@@ -1,4 +1,5 @@
-from poker import *
+from util import *
+from hand_compar import *
 
 import random
 import math
@@ -12,27 +13,6 @@ checkboxStates = [False,False,False,True,True] #Will be taken from js later
 def pmf(N, K, n, k):
     probability = (math.comb(K, k) * math.comb(N - K, n - k)) / math.comb(N, n)
     return round(probability * 100, 2)
-
-# Check whether all the Falses in the array are the same suit.
-
-def check_matching_suits(cards, states):
-    suit_set = set()  # To store suits corresponding to False values
-    for i in range(len(states)):
-        if not states[i]:  # If the value is False
-            suit_set.add(cards[i][1])  # Add the suit to the set
-    return len(suit_set) == 1  # True if all suits are the same, False otherwise
-
-def kept_card_ranks(cards, states):
-    return [cards[i][0] for i in range(len(cards)) if not states[i]]
-
-def discarded_card_ranks(cards, states):
-    return [cards[i][0] for i in range(len(cards)) if states[i]]
-
-def create_hand_after_discard(cards, states):
-    return [cards[i] for i in range(len(cards)) if not states[i]]
-
-def count_rank_occurrences(cards, rank):
-    return sum(1 for card in cards if card[0] == rank)
 
 def flush_probability(cards,states):
     deck = 47
@@ -82,32 +62,10 @@ def pair_probability(cards, states):
     probability = probability_old_pair + probability_new_pair
     return round(probability,2)
 
-# def three_probability(cards, states):
-#     deck = 47
-#     draws = states.count(True)
-#     kept_ranks = kept_card_ranks(cards, states)
-#     needed = 2 # Need two successes to make a pair
-#     hand_after_discard = create_hand_after_discard(cards, states)
-#     total_probability = 0
-#     if draws == 0:
-#         print('No draws')
-#         return 0
-#     if is_three(hand_after_discard) is not False:
-#         print('Already got three of a kind')
-#         return 0 # Don't show the probability if you already have three of a kind (after discarding)
-#     for rank in kept_ranks:
-#         total_probability += 
-#         success_states -= count_rank_occurrences(cards,rank)
-#     print('N:',deck)
-#     print('K:',success_states)
-#     print('n:',draws)
-#     print('k:',needed)
-#     return round(pmf (deck,success_states,draws,needed),2)
-
 hand = generate_hand()
 formatted_hand = format_poker_hand(hand)
 
-s = [False, False, False, False, True]
+s = [False, False, True, True, True]
 c = [('6', 'H'), ('7', 'H'), ('8', 'H'), ('J', 'H'), ('K', 'C')]
 
 print('The probability of drawing a pair is:',pair_probability(c,s))
