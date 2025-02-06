@@ -17,12 +17,31 @@ def pmf(N, K, n, k):
 def flush_probability(cards,states):
     deck = 47
     draws = states.count(True)
-    success_states = 8 + draws
     if draws == 0:
         return 0
+    success_states = 8 + draws
     if check_matching_suits(cards,states):
         return pmf(deck,success_states,draws,draws)
     return 0
+
+def straight_probability(cards, states):
+    deck = 47
+    draws = states.count(True)
+    if draws == 0:
+        return 0
+    s_f_combination = 0
+    kept_hand = create_hand_after_discard(cards, states)
+    success_draws = len(straight_is_missing(cards, states))
+    if is_flush(kept_hand) is not False:
+        s_f_combination += success_draws
+    combinations = success_draws*pow(4, draws) - s_f_combination # Subtract the straight flush
+    N = math.comb(deck, draws)
+    print('Success Draws =',success_draws, 'total. Which are:',straight_is_missing(cards, states))
+    print('K =',combinations)
+    print('N =',N)
+    probability = combinations/N
+    return probability*100
+    
 
 def pair_probability(cards, states):
     # If your hand already has a pair or better, you won't care about getting a pair
@@ -65,8 +84,9 @@ def pair_probability(cards, states):
 hand = generate_hand()
 formatted_hand = format_poker_hand(hand)
 
-s = [False, False, True, True, True]
-c = [('6', 'H'), ('7', 'H'), ('8', 'H'), ('J', 'H'), ('K', 'C')]
+s = [False, False, False, False, True]
+c = [('6', 'H'), ('7', 'H'), ('8', 'H'), ('9', 'H'), ('K', 'C')]
 
-print('The probability of drawing a pair is:',pair_probability(c,s))
-print('The probability of drawing a flush is:',flush_probability(c,s))
+# print('The probability of drawing a pair is:',pair_probability(c,s))
+# print('The probability of drawing a flush is:',flush_probability(c,s))
+print('The probability of drawing a straight is:',straight_probability(c,s))

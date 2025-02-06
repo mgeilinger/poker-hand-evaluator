@@ -126,4 +126,4 @@ s = [False, False, True, True, True]
 
 c = [('3', 'H'), ('5', 'H'), ('8', 'H'), ('J', 'H'), ('K', 'C')]
 
-print(straight_is_missing(c, s))
+# print(straight_is_missing(c, s))
