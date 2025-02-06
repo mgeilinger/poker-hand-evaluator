@@ -1,4 +1,5 @@
 import random
+from collections import Counter
 
 two_pair_1=[('K', 'H'), ('K', 'C'), ('4', 'C'), ('8', 'C'), ('8', 'H')]
 high_card_1=[('4', 'H'), ('7', 'C'), ('2', 'C'), ('K', 'C'), ('8', 'H')]
@@ -121,6 +122,15 @@ def straight_is_missing(cards, states):
             possible_additions.append(missing)
     
     return possible_additions
+
+# This function takes a list of ranks, counts their occurneces and checks if this reaches z.
+# y is what gets added to get it over the line.
+
+def can_you_make_n_of_a_kind(ranks, z, y):
+    rank_counts = Counter(ranks)
+    valid_hands = [[rank] * count for rank, count in rank_counts.items() if count + y >= z]
+
+    return valid_hands
 
 s = [False, False, True, True, True]
 
