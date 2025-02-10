@@ -28,6 +28,8 @@ def straight_flush_probability(cards, states):
     return 0
 
 def flush_probability(cards,states):
+    if is_flush(cards) is not False: # Don't calculate if you already have a flush
+        return None
     deck = 47
     draws = states.count(True)
     if draws == 0:
@@ -38,6 +40,8 @@ def flush_probability(cards,states):
     return 0
 
 def straight_probability(cards, states):
+    if is_straight(cards) is not False: # Don't calculate if you already have a straight
+        return None
     deck = 47
     draws = states.count(True)
     if draws == 0:
@@ -54,7 +58,7 @@ def straight_probability(cards, states):
 
 def four_probability(cards, states):
     if is_four(cards) is not False: # Don't calculate if you already have a four of a kind
-        return 0
+        return None
     deck = 47
     draws = states.count(True)
     if draws == 0: # Don't calculate if you're not discarding anything
@@ -72,14 +76,31 @@ def four_probability(cards, states):
         K = 4 - len(winner)
         n = draws
         k = 4 - len(winner)
-        # print('winner is',winner)
-        # print('N is', N)
-        # print('K is', K)
-        # print('n is', n)
-        # print('k is', k)
         old_prob += pmf(N,K,n,k)
-    # print(old_prob)
-    # print(new_prob)
+    probability = new_prob + old_prob
+    return round(100*probability,2)
+
+def three_probability(cards, states):
+    if is_four(cards) is not False and is_three(cards) is not False: # Don't calculate if you already have a four of a kind or three of a kind
+        return None
+    deck = 47
+    draws = states.count(True)
+    if draws == 0: # Don't calculate if you're not discarding anything
+        return 0
+    new_prob = 0
+    old_prob = 0
+    if (draws>=3):
+        new_prob += draws*pmf(deck,3,draws,3) + 8*pmf(deck,4,draws,3)
+    kept_ranks = kept_card_ranks(cards, states)
+    winners = can_you_make_n_of_a_kind(kept_ranks,3,draws)
+    for winner in winners:
+        N = deck
+        K = 4 - len(winner)
+        n = draws
+        k = 3 - len(winner)
+        old_prob += pmf(N,K,n,k)
+    print(old_prob)
+    print(new_prob)
     probability = new_prob + old_prob
     return round(100*probability,2)
 
@@ -124,10 +145,11 @@ def four_probability(cards, states):
 hand = generate_hand()
 formatted_hand = format_poker_hand(hand)
 
-s = [False, False, False, False, True]
-c = [('2', 'H'), ('3', 'H'), ('4', 'H'), ('5', 'H'), ('K', 'C')]
+s = [False, True, True , True, True]
+c = [('5', 'H'), ('J', 'H'), ('6', 'H'), ('3', 'H'), ('4', 'H')]
 
-print('The probability of drawing a straight is:',straight_probability(c,s),'%')
-print('The probability of drawing a flush is:',flush_probability(c,s),'%')
-print('The probability of drawing a four of a kind is:',four_probability(c,s),'%')
-print('The probability of drawing a straight flush is:',straight_flush_probability(c,s),'%')
+# print('The probability of drawing a straight is:',straight_probability(c,s),'%')
+# print('The probability of drawing a flush is:',flush_probability(c,s),'%')
+# print('The probability of drawing a four of a kind is:',four_probability(c,s),'%')
+# print('The probability of drawing a straight flush is:',straight_flush_probability(c,s),'%')
+print('The probability of drawing a three of a kind is:',three_probability(c,s),'%')
