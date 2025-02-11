@@ -54,10 +54,13 @@ def straight_probability(cards, states):
     combinations = success_draws*pow(4, draws) - s_f_combination # Subtract the straight flush
     N = math.comb(deck, draws)
     probability = combinations/N
+    if probability == 0:
+        return 0
     return round(probability*100,2)
 
 def four_probability(cards, states):
-    if is_four(cards) is not False: # Don't calculate if you already have a four of a kind
+    kept_hand = create_hand_after_discard(cards, states)
+    if is_four(kept_hand) is not False: # Don't calculate if you already have a four of a kind or three of a kind
         return None
     deck = 47
     draws = states.count(True)
@@ -71,9 +74,11 @@ def four_probability(cards, states):
     old_prob = 0
     kept_ranks = kept_card_ranks(cards, states)
     winners = can_you_make_n_of_a_kind(kept_ranks,4,draws)
+    discarded_ranks = discarded_card_ranks(cards, states)
     for winner in winners:
         N = deck
-        K = 4 - len(winner)
+        discarded_winner = discarded_ranks.count(winner[0])
+        K = 4 - len(winner) - discarded_winner
         n = draws
         k = 4 - len(winner)
         old_prob += pmf(N,K,n,k)
@@ -81,7 +86,8 @@ def four_probability(cards, states):
     return round(100*probability,2)
 
 def three_probability(cards, states):
-    if is_four(cards) is not False and is_three(cards) is not False: # Don't calculate if you already have a four of a kind or three of a kind
+    kept_hand = create_hand_after_discard(cards, states)
+    if is_three(kept_hand) is not False: # Don't calculate if you already have a four of a kind or three of a kind
         return None
     deck = 47
     draws = states.count(True)
@@ -90,25 +96,27 @@ def three_probability(cards, states):
     kept_ranks = kept_card_ranks(cards, states)
     winners = can_you_make_n_of_a_kind(kept_ranks,3,draws)
     discarded_ranks = discarded_card_ranks(cards, states)
-    print('kept ranks:',kept_ranks)
-    print('discarded ranks:',discarded_ranks)
+    # print('kept ranks:',kept_ranks)
+    # print('discarded ranks:',discarded_ranks)
     new_prob = 0
     old_prob = 0
     disc_prob = 0
     if (draws>=3):
-        for rank in discarded_ranks:
-            print('rank is:',rank)
+        for rank in ranks:
+            if rank in kept_ranks:
+                continue
+            # print('rank is:',rank)
             # Check occurences in original hand
             seen = 4 - kept_ranks.count(rank) - discarded_ranks.count(rank)
             N = deck
             n = draws
             k = 3
-            print('N is:',deck)
-            print('K is:',seen)
-            print('n is:',n)
-            print('k is:',k)
-            disc_prob += pmf(N,seen,n,k)
-        new_prob += disc_prob + 8*pmf(deck,4,draws,3)
+            # print('N is:',deck)
+            # print('K is:',seen)
+            # print('n is:',n)
+            # print('k is:',k)
+            new_prob += pmf(N,seen,n,k)
+            # print('prob is:',pmf(N,seen,n,k))
     for winner in winners:
         N = deck
         # Check occurences of winner in discarded cards and subtract those from K
@@ -121,75 +129,59 @@ def three_probability(cards, states):
     return round(100*probability,2)
 
 def pair_probability(cards, states):
-    if is_four(cards) is not False and is_three(cards) is not False and is_pair(cards) is not False: # Don't calculate if you already have a four of a kind or three of a kind
+    kept_hand = create_hand_after_discard(cards, states)
+    if is_pair(kept_hand) is not False: # Don't calculate if you already have a four of a kind or three of a kind
         return None
     deck = 47
     draws = states.count(True)
     if draws == 0: # Don't calculate if you're not discarding anything
         return 0
+    kept_ranks = kept_card_ranks(cards, states)
+    winners = can_you_make_n_of_a_kind(kept_ranks,2,draws)
+    discarded_ranks = discarded_card_ranks(cards, states)
+    # print('kept ranks:',kept_ranks)
+    # print('discarded ranks:',discarded_ranks)
     new_prob = 0
     old_prob = 0
-    if (draws>=3):
-        new_prob += draws*pmf(deck,3,draws,3) + 8*pmf(deck,4,draws,3)
-    kept_ranks = kept_card_ranks(cards, states)
-    winners = can_you_make_n_of_a_kind(kept_ranks,3,draws)
+    disc_prob = 0
+    if (draws>=2):
+        for rank in ranks:
+            if rank in kept_ranks:
+                continue
+            # print('rank is:',rank)
+            # Check occurences in original hand
+            seen = 4 - kept_ranks.count(rank) - discarded_ranks.count(rank)
+            N = deck
+            n = draws
+            k = 2
+            # print('N is:',deck)
+            # print('K is:',seen)
+            # print('n is:',n)
+            # print('k is:',k)
+            new_prob += pmf(N,seen,n,k)
+            # print('prob is:',pmf(N,seen,n,k))
     for winner in winners:
         N = deck
-        K = 4 - len(winner)
+        # Check occurences of winner in discarded cards and subtract those from K
+        discarded_winner = discarded_ranks.count(winner[0])
+        K = 4 - len(winner) - discarded_winner
         n = draws
-        k = 3 - len(winner)
+        k = 2 - len(winner)
         old_prob += pmf(N,K,n,k)
-    # print(old_prob)
     # print(new_prob)
+    # print(old_prob)
     probability = new_prob + old_prob
     return round(100*probability,2)
-
-# def pair_probability(cards, states):
-#     # If your hand already has a pair or better, you won't care about getting a pair
-#     # So I want this to return 0
-#     hand_after_discard = create_hand_after_discard(cards, states)
-#     if is_four(cards) is not False or is_three(cards) is not False or is_two_pair(cards) is not False or is_pair (cards) is not False:
-#         return 0
-#     deck = 47
-#     draws = states.count(True)
-#     kept_ranks = kept_card_ranks(cards, states)
-#     old_success_states = 0
-#     needed = 1 # Only need one success to make a pair
-#     if draws == 0:
-#         return 0
-#     # Probability of making a pair from the cards you already have:
-#     for rank in kept_ranks:
-#         old_success_states += 4
-#         old_success_states -= count_rank_occurrences(cards,rank)
-#     probability_old_pair = pmf (deck,old_success_states,draws,needed)
-#     # Probability of drawing a new pair from the deck:
-#     if draws<2:
-#         return round(probability_old_pair,2)
-#     probability_new_pair = 0
-#     for rank in ranks:
-#         in_deck = 4
-#         if rank in kept_ranks:
-#             in_deck -= 1
-#         N = math.comb(deck,draws)
-#         K = math.comb(in_deck,2)*draws*(draws-1)*math.comb(12,draws-2)
-#         probability_of_rank = pmf(N,K,1,1)
-#         probability_new_pair += probability_of_rank
-#         # print('Probability is:',probability_of_rank,'for',rank)
-#         # print('N:',N)
-#         # print('K:',K)
-#     # print('Probability of drawing an old pair:',probability_old_pair)
-#     # print('Probability of drawing a new pair:',probability_new_pair)
-#     probability = probability_old_pair + probability_new_pair
-#     return round(probability,2)
 
 hand = generate_hand()
 formatted_hand = format_poker_hand(hand)
 
-s = [False, True, True , True, True]
-c = [('5', 'H'), ('5', 'H'), ('4', 'H'), ('7', 'H'), ('J', 'H')]
+s = [False, False, True, True, True]
+c = [('5', 'C'), ('6', 'D'), ('8', 'C'), ('9', 'S'), ('8', 'H')]
 
-# print('The probability of drawing a straight is:',straight_probability(c,s),'%')
-# print('The probability of drawing a flush is:',flush_probability(c,s),'%')
-# print('The probability of drawing a four of a kind is:',four_probability(c,s),'%')
-# print('The probability of drawing a straight flush is:',straight_flush_probability(c,s),'%')
+print('The probability of drawing a straight is:',straight_probability(c,s),'%')
+print('The probability of drawing a flush is:',flush_probability(c,s),'%')
+print('The probability of drawing a four of a kind is:',four_probability(c,s),'%')
+print('The probability of drawing a straight flush is:',straight_flush_probability(c,s),'%')
 print('The probability of drawing a three of a kind is:',three_probability(c,s),'%')
+print('The probability of drawing a pair is:',pair_probability(c,s),'%')

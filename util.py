@@ -123,7 +123,7 @@ def straight_is_missing(cards, states):
     
     return possible_additions
 
-# This function takes a list of ranks, counts their occurneces and checks if this reaches z.
+# This function takes a list of ranks, counts their occurences and checks if this reaches z.
 # y is what gets added to get it over the line.
 
 def can_you_make_n_of_a_kind(ranks, z, y):
