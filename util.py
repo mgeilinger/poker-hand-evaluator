@@ -1,5 +1,6 @@
 import random
 from collections import Counter
+from itertools import permutations, combinations_with_replacement, product, chain
 
 two_pair_1=[('K', 'H'), ('K', 'C'), ('4', 'C'), ('8', 'C'), ('8', 'H')]
 high_card_1=[('4', 'H'), ('7', 'C'), ('2', 'C'), ('K', 'C'), ('8', 'H')]
@@ -132,8 +133,55 @@ def can_you_make_n_of_a_kind(ranks, z, y):
 
     return valid_hands
 
-s = [False, False, True, True, True]
+# The below function takes a list of ranks r, then tells you what ranks need adding to get z instance of it.
+# y is the allowed number of draws to get there.
 
-c = [('3', 'H'), ('5', 'H'), ('8', 'H'), ('J', 'H'), ('K', 'C')]
+def find_combinations(r, z, y):
+    count = Counter(r)  # Count occurrences of each string in r
+    unique_vals = set(r)  # Unique values to consider
+    
+    valid_combinations = []
+    
+    for val in unique_vals:
+        needed = z - count[val]  # How many more are needed to reach z
+        if 0 < needed <= y:  # Only consider if we can reach exactly z within y additions
+            valid_combinations.append([val] * needed)
+    
+    return valid_combinations
 
-# print(straight_is_missing(c, s))
+def full_house_winners (ranks, counts, draws):
+    result = []
+    z = counts[0]
+    x = counts[1]
+    rank_counts = {}
+    winners = find_combinations(ranks, z, draws)
+    print('starting ranks:',ranks)
+    print('needed in the first round to make 3 of a kind:',winners)
+    for rank in ranks:
+        rank_counts[rank] = ranks.count(rank)
+    if len(rank_counts)>2:
+        return []
+    if sum(rank_counts.values())+draws<5:
+        return []
+    for winner in winners:
+        print('winner:',winner)
+        second_winners = find_combinations(ranks, x, draws-len(winner))
+        print('second_winners:',second_winners)
+        result.append(winner)
+        if second_winners != []:
+            for second_winner in second_winners:
+                print('second_winner:',second_winner)
+                if winner[0]!=second_winner[0]:
+                    winner.append(second_winner[0])
+                    print('appeneded to winner')
+    return result
+
+# s = [False, False, True, True, True]
+
+# c = [('3', 'H'), ('5', 'H'), ('8', 'H'), ('J', 'H'), ('K', 'C')]
+
+r = ['5','6'] # kept hand
+z = [3,2] # full house
+n = 3 # draws
+
+print(full_house_winners(r, z, n))

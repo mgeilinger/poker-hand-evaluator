@@ -130,7 +130,7 @@ def three_probability(cards, states):
 
 def pair_probability(cards, states):
     kept_hand = create_hand_after_discard(cards, states)
-    if is_pair(kept_hand) is not False: # Don't calculate if you already have a four of a kind or three of a kind
+    if is_pair(kept_hand) is not False: # Don't calculate if you already have a four of a kind or three of a kind or a pair
         return None
     deck = 47
     draws = states.count(True)
@@ -173,15 +173,59 @@ def pair_probability(cards, states):
     probability = new_prob + old_prob
     return round(100*probability,2)
 
+def full_house_probability(cards, states):
+    deck = 47
+    draws = states.count(True)
+    if draws == 0: # Don't calculate if you're not discarding anything
+        return 0
+    kept_ranks = kept_card_ranks(cards, states)
+    winners = can_you_make_n_of_a_kind(kept_ranks,2,draws)
+    discarded_ranks = discarded_card_ranks(cards, states)
+    print('kept ranks:',kept_ranks)
+    print('discarded ranks:',discarded_ranks)
+    print('winners:',winners)
+    new_prob = 0
+    old_prob = 0
+    disc_prob = 0
+    # if (draws>=2):
+    #     for rank in ranks:
+    #         if rank in kept_ranks:
+    #             continue
+    #         print('rank is:',rank)
+    #         # Check occurences in original hand
+    #         seen = 4 - kept_ranks.count(rank) - discarded_ranks.count(rank)
+    #         N = deck
+    #         n = draws
+    #         k = 2
+    #         print('N is:',deck)
+    #         print('K is:',seen)
+    #         print('n is:',n)
+    #         print('k is:',k)
+    #         new_prob += pmf(N,seen,n,k)
+    #         # print('prob is:',pmf(N,seen,n,k))
+    for winner in winners:
+        N = deck
+        # Check occurences of winner in discarded cards and subtract those from K
+        discarded_winner = discarded_ranks.count(winner[0])
+        K = 4 - len(winner) - discarded_winner
+        n = draws
+        k = 2 - len(winner)
+        old_prob += pmf(N,K,n,k)
+    print('new_prob:',new_prob)
+    print('old_prob:',old_prob)
+    probability = new_prob + old_prob
+    return round(100*probability,2)
+
 hand = generate_hand()
 formatted_hand = format_poker_hand(hand)
 
 s = [False, False, True, True, True]
 c = [('5', 'C'), ('6', 'D'), ('8', 'C'), ('9', 'S'), ('8', 'H')]
 
-print('The probability of drawing a straight is:',straight_probability(c,s),'%')
-print('The probability of drawing a flush is:',flush_probability(c,s),'%')
-print('The probability of drawing a four of a kind is:',four_probability(c,s),'%')
-print('The probability of drawing a straight flush is:',straight_flush_probability(c,s),'%')
-print('The probability of drawing a three of a kind is:',three_probability(c,s),'%')
-print('The probability of drawing a pair is:',pair_probability(c,s),'%')
+# print('The probability of drawing a straight is:',straight_probability(c,s),'%')
+# print('The probability of drawing a flush is:',flush_probability(c,s),'%')
+# print('The probability of drawing a four of a kind is:',four_probability(c,s),'%')
+# print('The probability of drawing a straight flush is:',straight_flush_probability(c,s),'%')
+# print('The probability of drawing a three of a kind is:',three_probability(c,s),'%')
+# print('The probability of drawing a pair is:',pair_probability(c,s),'%')
+# print('The probability of drawing a full house is:',full_house_probability(c,s),'%')
