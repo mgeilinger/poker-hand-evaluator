@@ -155,8 +155,8 @@ def full_house_winners (ranks, counts, draws):
     x = counts[1]
     rank_counts = {}
     winners = find_combinations(ranks, z, draws)
-    print('starting ranks:',ranks)
-    print('needed in the first round to make 3 of a kind:',winners)
+    # print('starting ranks:',ranks)
+    # print('needed in the first round to make 3 of a kind:',winners)
     for rank in ranks:
         rank_counts[rank] = ranks.count(rank)
     if len(rank_counts)>2:
@@ -164,24 +164,29 @@ def full_house_winners (ranks, counts, draws):
     if sum(rank_counts.values())+draws<5:
         return []
     for winner in winners:
-        print('winner:',winner)
+        # print('winner:',winner)
         second_winners = find_combinations(ranks, x, draws-len(winner))
-        print('second_winners:',second_winners)
+        # print('second_winners:',second_winners)
         result.append(winner)
         if second_winners != []:
             for second_winner in second_winners:
-                print('second_winner:',second_winner)
+                # print('second_winner:',second_winner)
                 if winner[0]!=second_winner[0]:
                     winner.append(second_winner[0])
-                    print('appeneded to winner')
+                    # print('appeneded to winner')
+    #already have three of a kind
+    occur = Counter(ranks)
+    if any(count == 3 for count in occur.values()):
+        result = find_combinations(ranks, x, draws)
+    #give what's needed to finish the full house
     return result
 
 # s = [False, False, True, True, True]
 
 # c = [('3', 'H'), ('5', 'H'), ('8', 'H'), ('J', 'H'), ('K', 'C')]
 
-r = ['5','6'] # kept hand
+r = ['6','6','6'] # kept hand
 z = [3,2] # full house
-n = 3 # draws
+n = 2 # draws
 
-print(full_house_winners(r, z, n))
+# print(full_house_winners(r, z, n))

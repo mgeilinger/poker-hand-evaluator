@@ -179,7 +179,7 @@ def full_house_probability(cards, states):
     if draws == 0: # Don't calculate if you're not discarding anything
         return 0
     kept_ranks = kept_card_ranks(cards, states)
-    winners = can_you_make_n_of_a_kind(kept_ranks,2,draws)
+    winners = full_house_winners(kept_ranks,[3,2],draws)
     discarded_ranks = discarded_card_ranks(cards, states)
     print('kept ranks:',kept_ranks)
     print('discarded ranks:',discarded_ranks)
@@ -204,13 +204,20 @@ def full_house_probability(cards, states):
     #         new_prob += pmf(N,seen,n,k)
     #         # print('prob is:',pmf(N,seen,n,k))
     for winner in winners:
-        N = deck
-        # Check occurences of winner in discarded cards and subtract those from K
-        discarded_winner = discarded_ranks.count(winner[0])
-        K = 4 - len(winner) - discarded_winner
-        n = draws
-        k = 2 - len(winner)
-        old_prob += pmf(N,K,n,k)
+        counts = Counter(winner)
+        most_common = counts.most_common(2)
+        rank_1 = most_common[0][0]
+        K_1 = 4 - discarded_ranks.count(rank_1) - kept_ranks.count(rank_1)
+        k_1 = most_common[0][1]
+        if len(most_common) > 1:
+            rank_2 = most_common[1][0]
+            K_2 = 4 - discarded_ranks.count(rank_2) - kept_ranks.count(rank_2)
+            k_2 = most_common[1][1]
+            prob = (math.comb(K_1,k_1)*math.comb(K_2,k_2))/math.comb(deck,draws)
+        else:
+            prob = math.comb(K_1,k_1)/math.comb(deck,draws)
+        print('prob:',prob)
+        old_prob += prob
     print('new_prob:',new_prob)
     print('old_prob:',old_prob)
     probability = new_prob + old_prob
@@ -219,8 +226,8 @@ def full_house_probability(cards, states):
 hand = generate_hand()
 formatted_hand = format_poker_hand(hand)
 
-s = [False, False, True, True, True]
-c = [('5', 'C'), ('6', 'D'), ('8', 'C'), ('9', 'S'), ('8', 'H')]
+s = [False, False, False, True, True]
+c = [('5', 'C'), ('6', 'D'), ('6', 'S'), ('5', 'S'), ('5', 'H')]
 
 # print('The probability of drawing a straight is:',straight_probability(c,s),'%')
 # print('The probability of drawing a flush is:',flush_probability(c,s),'%')
@@ -228,4 +235,4 @@ c = [('5', 'C'), ('6', 'D'), ('8', 'C'), ('9', 'S'), ('8', 'H')]
 # print('The probability of drawing a straight flush is:',straight_flush_probability(c,s),'%')
 # print('The probability of drawing a three of a kind is:',three_probability(c,s),'%')
 # print('The probability of drawing a pair is:',pair_probability(c,s),'%')
-# print('The probability of drawing a full house is:',full_house_probability(c,s),'%')
+print('The probability of drawing a full house is:',full_house_probability(c,s),'%')
