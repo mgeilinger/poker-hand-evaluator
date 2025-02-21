@@ -1,18 +1,13 @@
 from util import *
 from hand_compar import *
 
-import random
-import math
+import random, math
 from collections import Counter
 
 checkboxStates = [False,False,False,True,True] #Will be taken from js later
 
 # Using the probability mass function let's start with flushes
 # math.comb() for binomial coefficient
-
-def pmf(N, K, n, k):
-    probability = (math.comb(K, k) * math.comb(N - K, n - k)) / math.comb(N, n)
-    return probability
 
 def straight_flush_probability(cards, states):
     deck = 47
@@ -96,27 +91,18 @@ def three_probability(cards, states):
     kept_ranks = kept_card_ranks(cards, states)
     winners = can_you_make_n_of_a_kind(kept_ranks,3,draws)
     discarded_ranks = discarded_card_ranks(cards, states)
-    # print('kept ranks:',kept_ranks)
-    # print('discarded ranks:',discarded_ranks)
     new_prob = 0
     old_prob = 0
-    disc_prob = 0
     if (draws>=3):
         for rank in ranks:
             if rank in kept_ranks:
                 continue
-            # print('rank is:',rank)
             # Check occurences in original hand
             seen = 4 - kept_ranks.count(rank) - discarded_ranks.count(rank)
             N = deck
             n = draws
             k = 3
-            # print('N is:',deck)
-            # print('K is:',seen)
-            # print('n is:',n)
-            # print('k is:',k)
             new_prob += pmf(N,seen,n,k)
-            # print('prob is:',pmf(N,seen,n,k))
     for winner in winners:
         N = deck
         # Check occurences of winner in discarded cards and subtract those from K
@@ -139,27 +125,18 @@ def pair_probability(cards, states):
     kept_ranks = kept_card_ranks(cards, states)
     winners = can_you_make_n_of_a_kind(kept_ranks,2,draws)
     discarded_ranks = discarded_card_ranks(cards, states)
-    # print('kept ranks:',kept_ranks)
-    # print('discarded ranks:',discarded_ranks)
     new_prob = 0
     old_prob = 0
-    disc_prob = 0
     if (draws>=2):
         for rank in ranks:
             if rank in kept_ranks:
                 continue
-            # print('rank is:',rank)
             # Check occurences in original hand
             seen = 4 - kept_ranks.count(rank) - discarded_ranks.count(rank)
             N = deck
             n = draws
             k = 2
-            # print('N is:',deck)
-            # print('K is:',seen)
-            # print('n is:',n)
-            # print('k is:',k)
             new_prob += pmf(N,seen,n,k)
-            # print('prob is:',pmf(N,seen,n,k))
     for winner in winners:
         N = deck
         # Check occurences of winner in discarded cards and subtract those from K
@@ -168,8 +145,6 @@ def pair_probability(cards, states):
         n = draws
         k = 2 - len(winner)
         old_prob += pmf(N,K,n,k)
-    # print(new_prob)
-    # print(old_prob)
     probability = new_prob + old_prob
     return round(100*probability,2)
 
@@ -186,23 +161,13 @@ def full_house_probability(cards, states):
     print('winners:',winners)
     new_prob = 0
     old_prob = 0
-    disc_prob = 0
-    # if (draws>=2):
-    #     for rank in ranks:
-    #         if rank in kept_ranks:
-    #             continue
-    #         print('rank is:',rank)
-    #         # Check occurences in original hand
-    #         seen = 4 - kept_ranks.count(rank) - discarded_ranks.count(rank)
-    #         N = deck
-    #         n = draws
-    #         k = 2
-    #         print('N is:',deck)
-    #         print('K is:',seen)
-    #         print('n is:',n)
-    #         print('k is:',k)
-    #         new_prob += pmf(N,seen,n,k)
-    #         # print('prob is:',pmf(N,seen,n,k))
+    if (len(set(kept_ranks)) == 1): # Check if all kept ranks are the same
+        if (draws == 2):
+            new_prob = sum_pmf_undetermined_ranks(cards, states, 2)
+        if (draws == 3):
+            new_prob = sum_pmf_undetermined_ranks(cards, states, 3) + 2/math.comb(deck,draws)*sum_comb_undetermined_ranks(cards, states, 2)
+        if (draws == 4):
+            new_prob = math.comb(3,2)/math.comb(deck,draws)*sum_comb_undetermined_ranks(cards, states, 2) + 2/math.comb(deck,draws)*sum_comb_undetermined_ranks(cards, states, 3)
     for winner in winners:
         counts = Counter(winner)
         most_common = counts.most_common(2)
@@ -216,7 +181,6 @@ def full_house_probability(cards, states):
             prob = (math.comb(K_1,k_1)*math.comb(K_2,k_2))/math.comb(deck,draws)
         else:
             prob = math.comb(K_1,k_1)/math.comb(deck,draws)
-        print('prob:',prob)
         old_prob += prob
     print('new_prob:',new_prob)
     print('old_prob:',old_prob)
@@ -227,7 +191,7 @@ hand = generate_hand()
 formatted_hand = format_poker_hand(hand)
 
 s = [False, False, False, True, True]
-c = [('5', 'C'), ('6', 'D'), ('6', 'S'), ('5', 'S'), ('5', 'H')]
+c = [('6', 'C'), ('6', 'D'), ('6', 'S'), ('J', 'S'), ('Q', 'H')]
 
 # print('The probability of drawing a straight is:',straight_probability(c,s),'%')
 # print('The probability of drawing a flush is:',flush_probability(c,s),'%')

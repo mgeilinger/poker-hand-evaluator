@@ -1,4 +1,4 @@
-import random
+import random, math
 from collections import Counter
 from itertools import permutations, combinations_with_replacement, product, chain
 
@@ -176,9 +176,39 @@ def full_house_winners (ranks, counts, draws):
                     # print('appeneded to winner')
     #already have three of a kind
     occur = Counter(ranks)
-    if any(count == 3 for count in occur.values()):
+    if any(count == z for count in occur.values()):
         result = find_combinations(ranks, x, draws)
     #give what's needed to finish the full house
+    return result
+
+def pmf(N, K, n, k):
+    probability = (math.comb(K, k) * math.comb(N - K, n - k)) / math.comb(N, n)
+    return probability
+
+def sum_pmf_undetermined_ranks(cards, states, k):
+    result = 0
+    for rank in ranks:
+        kept_ranks = kept_card_ranks(cards, states)
+        discarded_ranks = discarded_card_ranks(cards, states)
+        if rank in kept_ranks:
+            continue
+        seen = 4 - kept_ranks.count(rank) - discarded_ranks.count(rank)
+        N = 47
+        n = states.count(True)
+        result += pmf(N,seen,n,k)
+    return result
+
+def sum_comb_undetermined_ranks(cards, states, k):
+    result = 0
+    for rank in ranks:
+        kept_ranks = kept_card_ranks(cards, states)
+        discarded_ranks = discarded_card_ranks(cards, states)
+        if rank in kept_ranks:
+            continue
+        seen = 4 - kept_ranks.count(rank) - discarded_ranks.count(rank)
+        N = 47
+        n = states.count(True)
+        result += math.comb(seen,k)
     return result
 
 # s = [False, False, True, True, True]
