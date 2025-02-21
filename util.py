@@ -1,6 +1,6 @@
 import random, math
 from collections import Counter
-from itertools import permutations, combinations_with_replacement, product, chain
+from itertools import permutations, combinations, combinations_with_replacement, product, chain
 
 two_pair_1=[('K', 'H'), ('K', 'C'), ('4', 'C'), ('8', 'C'), ('8', 'H')]
 high_card_1=[('4', 'H'), ('7', 'C'), ('2', 'C'), ('K', 'C'), ('8', 'H')]
@@ -155,8 +155,6 @@ def full_house_winners (ranks, counts, draws):
     x = counts[1]
     rank_counts = {}
     winners = find_combinations(ranks, z, draws)
-    # print('starting ranks:',ranks)
-    # print('needed in the first round to make 3 of a kind:',winners)
     for rank in ranks:
         rank_counts[rank] = ranks.count(rank)
     if len(rank_counts)>2:
@@ -164,22 +162,47 @@ def full_house_winners (ranks, counts, draws):
     if sum(rank_counts.values())+draws<5:
         return []
     for winner in winners:
-        # print('winner:',winner)
         second_winners = find_combinations(ranks, x, draws-len(winner))
-        # print('second_winners:',second_winners)
         result.append(winner)
         if second_winners != []:
             for second_winner in second_winners:
-                # print('second_winner:',second_winner)
                 if winner[0]!=second_winner[0]:
                     winner.append(second_winner[0])
-                    # print('appeneded to winner')
-    #already have three of a kind
+    # Already have three of a kind
     occur = Counter(ranks)
     if any(count == z for count in occur.values()):
         result = find_combinations(ranks, x, draws)
-    #give what's needed to finish the full house
-    return result
+    # Remove duplicates
+    holder = set()
+    lst = []
+    for sublist in result:
+        key = tuple(sorted(sublist))  # Create a sorted tuple as the unique key
+        if key not in holder:
+            holder.add(key)
+            lst.append(sublist)
+    return lst
+
+def two_pair_winners (ranks, draws):
+    result = []
+    if len(ranks) != len(set(ranks)): # Check if pairs exist in ranks
+        counts = Counter(ranks)  # Count occurrences of each string
+        ranks = [item for item in ranks if counts[item] == 1]  # Keep only items that appear once
+        result = find_combinations(ranks, 2, draws)
+    else:
+        winners = find_combinations(ranks, 2, draws)
+        # Extract the inner elements from sublists
+        flat_list = [item[0] for item in winners]
+        # Generate all unique pairs
+        result = [list(pair) for pair in combinations(flat_list, 2)]
+    # Remove duplicates
+    holder = set()
+    lst = []
+    for sublist in result:
+        key = tuple(sorted(sublist))  # Create a sorted tuple as the unique key
+        if key not in holder:
+            holder.add(key)
+            lst.append(sublist)
+    return lst
 
 def pmf(N, K, n, k):
     probability = (math.comb(K, k) * math.comb(N - K, n - k)) / math.comb(N, n)
@@ -215,8 +238,7 @@ def sum_comb_undetermined_ranks(cards, states, k):
 
 # c = [('3', 'H'), ('5', 'H'), ('8', 'H'), ('J', 'H'), ('K', 'C')]
 
-r = ['6','6','6'] # kept hand
-z = [3,2] # full house
+r = ['5','9','9','10'] # kept hand
 n = 2 # draws
 
-# print(full_house_winners(r, z, n))
+# print('Two pair winners:',two_pair_winners(r,n))

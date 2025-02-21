@@ -156,9 +156,6 @@ def full_house_probability(cards, states):
     kept_ranks = kept_card_ranks(cards, states)
     winners = full_house_winners(kept_ranks,[3,2],draws)
     discarded_ranks = discarded_card_ranks(cards, states)
-    print('kept ranks:',kept_ranks)
-    print('discarded ranks:',discarded_ranks)
-    print('winners:',winners)
     new_prob = 0
     old_prob = 0
     if (len(set(kept_ranks)) == 1): # Check if all kept ranks are the same
@@ -182,6 +179,46 @@ def full_house_probability(cards, states):
         else:
             prob = math.comb(K_1,k_1)/math.comb(deck,draws)
         old_prob += prob
+    probability = new_prob + old_prob
+    return round(100*probability,2)
+
+def two_pair_probability(cards, states):
+    kept_hand = create_hand_after_discard(cards, states)
+    kept_ranks = kept_card_ranks(cards, states)
+    discarded_ranks = discarded_card_ranks(cards, states)
+    deck = 47
+    draws = states.count(True)
+    if is_two_pair(kept_hand) is not False: # Don't calculate if you already have a two pair
+        return None
+    if draws == 0: # Don't calculate if you're not discarding anything
+        return 0
+    winners = two_pair_winners(kept_ranks, draws)
+    print('kept ranks:',kept_ranks)
+    print('discarded ranks:',discarded_ranks)
+    print('winners:',winners)
+    new_prob = 0
+    old_prob = 0
+    # if (len(set(kept_ranks)) == 1): # Check if all kept ranks are the same
+    #     if (draws == 2):
+    #         new_prob = sum_pmf_undetermined_ranks(cards, states, 2)
+    #     if (draws == 3):
+    #         new_prob = sum_pmf_undetermined_ranks(cards, states, 3) + 2/math.comb(deck,draws)*sum_comb_undetermined_ranks(cards, states, 2)
+    #     if (draws == 4):
+    #         new_prob = math.comb(3,2)/math.comb(deck,draws)*sum_comb_undetermined_ranks(cards, states, 2) + 2/math.comb(deck,draws)*sum_comb_undetermined_ranks(cards, states, 3)
+    for winner in winners:
+        counts = Counter(winner)
+        most_common = counts.most_common(2)
+        rank_1 = most_common[0][0]
+        K_1 = 4 - discarded_ranks.count(rank_1) - kept_ranks.count(rank_1)
+        k_1 = most_common[0][1]
+        if len(most_common) > 1:
+            rank_2 = most_common[1][0]
+            K_2 = 4 - discarded_ranks.count(rank_2) - kept_ranks.count(rank_2)
+            k_2 = most_common[1][1]
+            prob = (math.comb(K_1,k_1)*math.comb(K_2,k_2))/math.comb(deck,draws)
+        else:
+            prob = math.comb(K_1,k_1)/math.comb(deck,draws)
+        old_prob += prob
     print('new_prob:',new_prob)
     print('old_prob:',old_prob)
     probability = new_prob + old_prob
@@ -191,7 +228,7 @@ hand = generate_hand()
 formatted_hand = format_poker_hand(hand)
 
 s = [False, False, False, True, True]
-c = [('6', 'C'), ('6', 'D'), ('6', 'S'), ('J', 'S'), ('Q', 'H')]
+c = [('5', 'C'), ('6', 'D'), ('7', 'S'), ('9', 'S'), ('Q', 'H')]
 
 # print('The probability of drawing a straight is:',straight_probability(c,s),'%')
 # print('The probability of drawing a flush is:',flush_probability(c,s),'%')
@@ -199,4 +236,5 @@ c = [('6', 'C'), ('6', 'D'), ('6', 'S'), ('J', 'S'), ('Q', 'H')]
 # print('The probability of drawing a straight flush is:',straight_flush_probability(c,s),'%')
 # print('The probability of drawing a three of a kind is:',three_probability(c,s),'%')
 # print('The probability of drawing a pair is:',pair_probability(c,s),'%')
-print('The probability of drawing a full house is:',full_house_probability(c,s),'%')
+# print('The probability of drawing a full house is:',full_house_probability(c,s),'%')
+print('The probability of drawing a two pair is:',two_pair_probability(c,s),'%')
