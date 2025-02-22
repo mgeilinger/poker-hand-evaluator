@@ -198,13 +198,32 @@ def two_pair_probability(cards, states):
     print('winners:',winners)
     new_prob = 0
     old_prob = 0
-    # if (len(set(kept_ranks)) == 1): # Check if all kept ranks are the same
-    #     if (draws == 2):
-    #         new_prob = sum_pmf_undetermined_ranks(cards, states, 2)
-    #     if (draws == 3):
-    #         new_prob = sum_pmf_undetermined_ranks(cards, states, 3) + 2/math.comb(deck,draws)*sum_comb_undetermined_ranks(cards, states, 2)
-    #     if (draws == 4):
-    #         new_prob = math.comb(3,2)/math.comb(deck,draws)*sum_comb_undetermined_ranks(cards, states, 2) + 2/math.comb(deck,draws)*sum_comb_undetermined_ranks(cards, states, 3)
+    n4_prob = 0
+    if draws >= 2:
+        for rank in ranks:
+            if is_pair(kept_hand) is not False: # You already have a pair and just need to draw another one
+                if rank in kept_ranks:
+                    continue
+                # Check occurences in original hand
+                seen = 4 - kept_ranks.count(rank) - discarded_ranks.count(rank)
+                N = deck
+                n = draws
+                k = 2
+                new_prob += pmf(N,seen,n,k)
+        if draws > 2 and is_pair(kept_hand) is False:
+                temp_winners = can_you_make_n_of_a_kind(kept_ranks,2,draws)
+                number_of_winners = len(temp_winners)
+                new_prob += number_of_winners * 2/math.comb(deck,draws)*sum_comb_undetermined_ranks(cards, states, 2)
+    if draws == 4:
+        for i, rank_1 in enumerate(ranks):  # Outer loop
+            for rank_2 in ranks[i + 1:]:  # Inner loop
+                k_1 = k_2 = 2
+                K_1 = 4 - discarded_ranks.count(rank_1) - kept_ranks.count(rank_1)
+                K_2 = 4 - discarded_ranks.count(rank_2) - kept_ranks.count(rank_2)
+                prob_1_2 = (math.comb(K_1,k_1)*math.comb(K_2,k_2))/math.comb(deck,draws)
+                n4_prob += prob_1_2
+        new_prob += n4_prob
+        print('n4_prob:',n4_prob)
     for winner in winners:
         counts = Counter(winner)
         most_common = counts.most_common(2)
@@ -217,7 +236,7 @@ def two_pair_probability(cards, states):
             k_2 = most_common[1][1]
             prob = (math.comb(K_1,k_1)*math.comb(K_2,k_2))/math.comb(deck,draws)
         else:
-            prob = math.comb(K_1,k_1)/math.comb(deck,draws)
+            prob = pmf(deck,K_1,draws,k_1)
         old_prob += prob
     print('new_prob:',new_prob)
     print('old_prob:',old_prob)
@@ -227,8 +246,8 @@ def two_pair_probability(cards, states):
 hand = generate_hand()
 formatted_hand = format_poker_hand(hand)
 
-s = [False, False, False, True, True]
-c = [('5', 'C'), ('6', 'D'), ('7', 'S'), ('9', 'S'), ('Q', 'H')]
+s = [False, True, True, True, True]
+c = [('5', 'C'), ('7', 'D'), ('J', 'S'), ('9', 'S'), ('Q', 'H')]
 
 # print('The probability of drawing a straight is:',straight_probability(c,s),'%')
 # print('The probability of drawing a flush is:',flush_probability(c,s),'%')
