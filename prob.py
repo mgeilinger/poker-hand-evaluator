@@ -193,9 +193,9 @@ def two_pair_probability(cards, states):
     if draws == 0: # Don't calculate if you're not discarding anything
         return 0
     winners = two_pair_winners(kept_ranks, draws)
-    print('kept ranks:',kept_ranks)
-    print('discarded ranks:',discarded_ranks)
-    print('winners:',winners)
+    # print('kept ranks:',kept_ranks)
+    # print('discarded ranks:',discarded_ranks)
+    # print('winners:',winners)
     new_prob = 0
     old_prob = 0
     n4_prob = 0
@@ -223,7 +223,7 @@ def two_pair_probability(cards, states):
                 prob_1_2 = (math.comb(K_1,k_1)*math.comb(K_2,k_2))/math.comb(deck,draws)
                 n4_prob += prob_1_2
         new_prob += n4_prob
-        print('n4_prob:',n4_prob)
+        # print('n4_prob:',n4_prob)
     for winner in winners:
         counts = Counter(winner)
         most_common = counts.most_common(2)
@@ -238,22 +238,22 @@ def two_pair_probability(cards, states):
         else:
             prob = pmf(deck,K_1,draws,k_1)
         old_prob += prob
-    print('new_prob:',new_prob)
-    print('old_prob:',old_prob)
+    # print('new_prob:',new_prob)
+    # print('old_prob:',old_prob)
     probability = new_prob + old_prob
     return round(100*probability,2)
 
 hand = generate_hand()
 formatted_hand = format_poker_hand(hand)
 
-s = [False, True, True, True, True]
+s = [False, False, True, True, True]
 c = [('5', 'C'), ('7', 'D'), ('J', 'S'), ('9', 'S'), ('Q', 'H')]
 
-# print('The probability of drawing a straight is:',straight_probability(c,s),'%')
-# print('The probability of drawing a flush is:',flush_probability(c,s),'%')
-# print('The probability of drawing a four of a kind is:',four_probability(c,s),'%')
-# print('The probability of drawing a straight flush is:',straight_flush_probability(c,s),'%')
-# print('The probability of drawing a three of a kind is:',three_probability(c,s),'%')
-# print('The probability of drawing a pair is:',pair_probability(c,s),'%')
-# print('The probability of drawing a full house is:',full_house_probability(c,s),'%')
+print('The probability of drawing a straight is:',straight_probability(c,s),'%')
+print('The probability of drawing a flush is:',flush_probability(c,s),'%')
+print('The probability of drawing a four of a kind is:',four_probability(c,s),'%')
+print('The probability of drawing a straight flush is:',straight_flush_probability(c,s),'%')
+print('The probability of drawing a three of a kind is:',three_probability(c,s),'%')
+print('The probability of drawing a pair is:',pair_probability(c,s),'%')
+print('The probability of drawing a full house is:',full_house_probability(c,s),'%')
 print('The probability of drawing a two pair is:',two_pair_probability(c,s),'%')
