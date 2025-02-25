@@ -56,12 +56,18 @@ def submit():
         'Two Pair': two_pair_probability(hand, checkbox_states),
     }
 
-    # Print probabilities in console for debugging
-    print("Calculated Probabilities:")
-    for hand_type, prob in probabilities.items():
+    # Remove probabilities that are None or 0%
+    filtered_probabilities = {
+        hand_type: prob for hand_type, prob in probabilities.items()
+        if prob not in [None, 0]
+    }
+
+    # Debug print
+    print("Filtered Probabilities (Non-Zero):")
+    for hand_type, prob in filtered_probabilities.items():
         print(f"{hand_type}: {prob}%")
 
-    return jsonify(probabilities)  # Send probabilities to frontend
+    return jsonify(filtered_probabilities)  # Send only non-zero probabilities
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
