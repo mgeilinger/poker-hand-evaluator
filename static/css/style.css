@@ -1,0 +1,77 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #006400;
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
+
+h1 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+
+#drawButton {
+    background-color: gold;
+    color: black;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1.2em;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+
+#drawButton:hover {
+    background-color: #ffcc00;
+}
+
+#poker-hand {
+    font-size: 2em;
+    font-weight: bold;
+    margin: 20px 0;
+    padding: 10px;
+    border: 2px solid white;
+    display: inline-block;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+}
+
+.checkboxes {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.checkboxes label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 1.2em;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.checkboxes label:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+input[type="checkbox"] {
+    margin-top: 10px;
+    transform: scale(1.5);
+}
+
+#probability-display {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-top: 30px;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.2);
+    display: inline-block;
+    border-radius: 10px;
+}
