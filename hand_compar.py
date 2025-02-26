@@ -125,3 +125,7 @@ def hand_rank_string(cards):
     if is_pair(cards) is not False:
         return "pair"
     return "high card" 
+
+c = [('10', 'C'), ('10', 'D'), ('10', 'S')]
+
+print(is_three(c))

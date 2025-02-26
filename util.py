@@ -240,5 +240,3 @@ def sum_comb_undetermined_ranks(cards, states, k):
 
 r = ['5','9','9','10'] # kept hand
 n = 2 # draws
-
-# print('Two pair winners:',two_pair_winners(r,n))

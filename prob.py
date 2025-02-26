@@ -116,7 +116,7 @@ def three_probability(cards, states):
 
 def pair_probability(cards, states):
     kept_hand = create_hand_after_discard(cards, states)
-    if is_pair(kept_hand) is not False: # Don't calculate if you already have a four of a kind or three of a kind or a pair
+    if is_pair(kept_hand) is not False or is_three(kept_hand) is not False or is_four(kept_hand) is not False: # Don't calculate if you already have a four of a kind or three of a kind or a pair
         return None
     deck = 47
     draws = states.count(True)
@@ -246,8 +246,8 @@ def two_pair_probability(cards, states):
 hand = generate_hand()
 formatted_hand = format_poker_hand(hand)
 
-s = [False, False, True, True, True]
-c = [('5', 'C'), ('7', 'D'), ('J', 'S'), ('9', 'S'), ('Q', 'H')]
+s = [False, False, False, True, True]
+c = [('10', 'C'), ('10', 'D'), ('10', 'S'), ('3', 'C'), ('Q', 'H')]
 
 print('The probability of drawing a straight is:',straight_probability(c,s),'%')
 print('The probability of drawing a flush is:',flush_probability(c,s),'%')
